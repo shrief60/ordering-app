@@ -2,10 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\OrderRequest;
+use App\Services\OrderService;
+use Exception;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+    private $orderService;
+
+    public function __construct(OrderService $orderService)
+    {
+        $this->orderService = $orderService;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -17,13 +26,21 @@ class OrderController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new order.
      *
+     * @param  \Illuminate\Http\Request
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(OrderRequest $request)
     {
-        dd(123);
+        try{
+            $data = $request->validated();
+            $response  = $this->orderService->CreateOrder($data);
+            return response()->json($response, $response['status']);
+        } catch(Exception $e){
+            return response()->json(['Message' => $e->getMessage()], 403);
+        }
+
     }
 
     /**

@@ -232,4 +232,6 @@ return [
 
     ],
 
+    'reciever_mail' => env('MERCHANT_RECIEVER_MAIL', 'shriefanwer60@gmail.com'),
+
 ];
