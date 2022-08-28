@@ -48,6 +48,14 @@ class OrderService
 
     }
 
+    /**
+     * calculate product ingredients for order
+     *
+     * @param Product[] $productIngredients
+     * @param array $products
+     * 
+     * @return array
+     */
     public function calculateAllIngredients($productIngredients, $products ) :array
     {
         $ingredientsAmount = array();
@@ -60,10 +68,19 @@ class OrderService
         return  $ingredientsAmount;
     }
 
+    /**
+     * check Ingredients Availability
+     *
+     * @param array $ingredientsAmount
+     * 
+     * @return void
+     */
     public function checkIngredientsAvailability($ingredientsAmount) : void
     {
         $ingredientsIds = array_keys($ingredientsAmount);
         $ingredients = Ingredient::whereIn('id', $ingredientsIds)->get();
+        Log::info(__CLASS__.__FUNCTION__."Check  ingredient availability log product ingredients", ['ingredients' => $ingredients]);
+        
         foreach ($ingredients as $key => $ingredient)
         {
             if( $this->IsIngredientLessThanFiftyPercentage($ingredient, $ingredientsAmount))
@@ -76,17 +93,32 @@ class OrderService
 
             if( $ingredient->stock < $ingredientsAmount[$ingredient->id])
             {
-                Log::emergency($ingredient->name." is not available now, please Contact stock manager");
+                Log::emergency($ingredient->name." is not available now, please Contact stock manager", ['stock' => $ingredient->stock, 'amount' => $ingredientsAmount[$ingredient->id]]);
                 throw new Exception("we are sorry, we could not proceed with order please try again", 403);
             }
         }
     }
 
-    public function IsIngredientLessThanFiftyPercentage($ingredient, $ingredientsAmount)
+    /**
+     * Is Ingredient Less Than Fifty Percentage
+     * @param Ingredient $ingredient
+     * @param array $ingredientsAmount
+     * 
+     * @return bool
+     */
+    public function IsIngredientLessThanFiftyPercentage($ingredient, $ingredientsAmount) :bool
     {
+        Log::info(__CLASS__.__FUNCTION__."Check  ingredient for mail", ['stock' => $ingredient->stock, 'ingredient_amount' => $ingredientsAmount[$ingredient->id], 'acknowleded' => $ingredient->Achknowleded ]);
         return ($ingredient->stock - $ingredientsAmount[$ingredient->id]) * 100 / $ingredient->total_amount < 50 && $ingredient->Achknowleded == false;
     }
 
+    /**
+     * Is Ingredient Less Than Fifty Percentage
+     * @param integer $productId
+     * @param array $products
+     * 
+     * @return bool
+     */
     public function getProductQuantity($productId, $products)
     {
         foreach ($products as $key => $product) {
@@ -95,6 +127,12 @@ class OrderService
         return 1;
     }
 
+    /**
+     * send Shortage Mail
+     * @param Ingredient $ingredient
+     * 
+     * @return void
+     */
     public function sendShortageMail($ingredient)
     {
         try {

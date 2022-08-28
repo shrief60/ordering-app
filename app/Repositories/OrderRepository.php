@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Jobs\OrderProductIngredientJob;
 use App\Models\Ingredient;
 use App\Models\Order;
 use App\Models\OrderProduct;
@@ -24,8 +25,12 @@ class OrderRepository
         try{
             $result = DB::transaction(function () use ($products, $ingredientsAmount){
                 $order = Order::create(['status' => Order::ACCEPTED_STATUS, 'total_price' => '10']);
-                foreach ($products as $key => $product)
+                foreach ($products as $key => $product){
                     $product =OrderProduct::create(['order_id' => $order->id, 'product_id' => $product['product_id'], 'quantity' => $product['quantity']]);
+                    //log order, product and used ingredients just for tracking 
+                    dispatch((new OrderProductIngredientJob($product->id, $order->id, $products, $product['product_id']))->onQueue('default'));
+                }
+
                 foreach ($ingredientsAmount as $key => $ingredient) {
                     $DBingredient = Ingredient::where('id', $key)->decrement('stock',$ingredient);
                 }
