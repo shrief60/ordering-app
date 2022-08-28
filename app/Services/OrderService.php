@@ -4,12 +4,10 @@ namespace App\Services;
 
 use App\Mail\IngredientShortage;
 use App\Models\Ingredient;
-use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductIngredient;
 use App\Repositories\OrderRepository;
 use Exception;
-use GuzzleHttp\Psr7\Message;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -71,7 +69,7 @@ class OrderService
             if( $this->IsIngredientLessThanFiftyPercentage($ingredient, $ingredientsAmount))
             {
                 //send email in background
-                Mail::to(config('app.reciever_mail'))->send(new IngredientShortage($ingredient));
+                $this->sendShortageMail($ingredient);
                 $ingredient->Achknowleded = true;
                 $ingredient->save();
             }
@@ -95,5 +93,14 @@ class OrderService
             if($product['product_id'] == $productId) return $product['quantity'];
         }
         return 1;
+    }
+
+    public function sendShortageMail($ingredient)
+    {
+        try {
+            Mail::to(config('app.reciever_mail'))->send(new IngredientShortage($ingredient));
+        } catch (\Throwable $th) {
+            Log::emergency($ingredient->name." shortage mail  doesn't sent to the store",['ingredient' => $ingredient]);
+        }
     }
 }

@@ -17,7 +17,7 @@ class CreateIngredientsTable extends Migration
             $table->id();
             $table->string('name', 256);
             $table->double('total_amount');
-            $table->double('stock')->min(0);
+            $table->unsignedDouble('stock');
             $table->boolean('Achknowleded')->default(false);
             $table->index('name');
             $table->timestamps();

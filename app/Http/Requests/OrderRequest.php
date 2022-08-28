@@ -45,7 +45,7 @@ class OrderRequest extends FormRequest
 
             'data'      => $validator->errors()
 
-        ]));
+        ], 400));
 
     }
 }

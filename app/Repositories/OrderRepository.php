@@ -31,11 +31,9 @@ class OrderRepository
                 }
             });
             return ['status' => 200, 'message' => "order Created successfully"];
-        }catch(Exception $e)
-        {
-            Log::error(__CLASS__ . __FUNCTION__ . "log error happened while create order transaction", ["message" => $e->getMessage()]);
+        }catch(Exception $e) {
+            Log::error(__CLASS__ . __FUNCTION__ . " log error happened while create order transaction", ["message" => $e->getMessage()]);
             return ['status' => 403, 'message' => "DB: Failed to create order"];
-
         }
     }
 

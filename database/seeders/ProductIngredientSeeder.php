@@ -16,31 +16,37 @@ class ProductIngredientSeeder extends Seeder
     {
         DB::table('product_ingredients')->insert([
             [
+                'id' => 1,
                 'product_id' => 1,
                 'ingredient_id' => 1,
                 'amount' => 150,
             ],
             [
+                'id' => 2,
                 'product_id' => 1,
                 'ingredient_id' => 2,
                 'amount' => 30,
             ],
             [
+                'id' => 3,
                 'product_id' => 1,
                 'ingredient_id' => 3,
                 'amount' => 20,
             ],
             [
+                'id' => 4,
                 'product_id' => 2,
                 'ingredient_id' => 1,
                 'amount' => 120,
             ],
             [
+                'id' => 5,
                 'product_id' => 2,
                 'ingredient_id' => 2,
                 'amount' => 20,
             ],
             [
+                'id' => 6,
                 'product_id' => 2,
                 'ingredient_id' => 3,
                 'amount' => 10,
